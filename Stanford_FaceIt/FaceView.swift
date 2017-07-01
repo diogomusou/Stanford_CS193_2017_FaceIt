@@ -8,16 +8,16 @@
 
 import UIKit
 
-@IBDesignable
+//@IBDesignable
 class FaceView: UIView {
     @IBInspectable
-    var scale : CGFloat = 0.9
+    var scale : CGFloat = 0.9 { didSet{ setNeedsDisplay() } }
     
     @IBInspectable
-    var eyesOpen : Bool = false
+    var eyesOpen : Bool = false { didSet{ setNeedsDisplay() } }
     
     @IBInspectable
-    var mouthCurvature : Double = -1.0 //1.0 is full smile and -1.0 is full frown
+    var mouthCurvature : Double = -1.0 { didSet{ setNeedsDisplay() } } //1.0 is full smile and -1.0 is full frown
     
     @IBInspectable
     var lineWidth : CGFloat = 5.0
@@ -30,6 +30,16 @@ class FaceView: UIView {
     }
     private var skullCenter : CGPoint {
         return CGPoint(x: bounds.midX, y: bounds.midY)
+    }
+    
+    @objc func setScale(byReactingTo pinchRecognizer : UIPinchGestureRecognizer) {
+        switch pinchRecognizer.state {
+        case .changed, .ended:
+            self.scale *= pinchRecognizer.scale
+            pinchRecognizer.scale = 1
+        default:
+            break
+        }
     }
     
     private func pathForSkull() -> UIBezierPath {
